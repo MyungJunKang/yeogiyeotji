@@ -3,10 +3,10 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
-  --color-brand: #7c5cff;
+  --color-brand: #0091bd;
 
   --color-again: #3b82f6;
-  --color-okay: #a855f7;
+  --color-okay: #e0a44e;
   --color-never: #64748b;
 
   --color-kakao: #fee500;
@@ -43,5 +43,217 @@
     font-family: system-ui, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ── 로그인 화면 ─────────────────────────────────────────── */
+@layer components {
+  .login-screen {
+    --login-base-1: #ece6ff;
+    --login-base-2: #ffffff;
+
+    position: relative;
+    display: flex;
+    min-height: 100dvh;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    padding: max(2.5rem, env(safe-area-inset-top)) 1.5rem
+      max(2.5rem, env(safe-area-inset-bottom));
+    color: var(--color-fg);
+    background:
+      radial-gradient(
+        135% 105% at 50% -20%,
+        color-mix(in oklab, var(--color-brand) 42%, transparent),
+        transparent 58%
+      ),
+      linear-gradient(180deg, var(--login-base-1), var(--login-base-2));
+  }
+
+  [data-theme="dark"] .login-screen {
+    --login-base-1: #191531;
+    --login-base-2: #08060d;
+  }
+
+  .login-aurora {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    filter: blur(64px);
+    opacity: 0.55;
+  }
+
+  [data-theme="dark"] .login-aurora {
+    opacity: 0.45;
+  }
+
+  .login-blob {
+    position: absolute;
+    width: 17rem;
+    height: 17rem;
+    border-radius: 9999px;
+    mix-blend-mode: multiply;
+    will-change: transform;
+    animation: login-float 16s ease-in-out infinite;
+  }
+
+  [data-theme="dark"] .login-blob {
+    mix-blend-mode: screen;
+  }
+
+  .login-blob--again {
+    top: -3.5rem;
+    left: -3rem;
+    background: var(--color-again);
+    animation-delay: 0s;
+  }
+
+  .login-blob--okay {
+    top: 22%;
+    right: -5rem;
+    background: var(--color-okay);
+    animation-delay: -5s;
+  }
+
+  .login-blob--never {
+    bottom: 6%;
+    left: 12%;
+    background: var(--color-never);
+    animation-delay: -10s;
+  }
+
+  @keyframes login-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    33% {
+      transform: translate3d(2rem, -1.75rem, 0) scale(1.12);
+    }
+    66% {
+      transform: translate3d(-1.75rem, 1.25rem, 0) scale(0.94);
+    }
+  }
+
+  .login-shell {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1;
+    width: 100%;
+    max-width: 26rem;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .login-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.25rem;
+    animation: login-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes login-rise {
+    from {
+      opacity: 0;
+      transform: translateY(1.25rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .login-logo {
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: 1.1rem;
+    box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.4);
+  }
+
+  .login-logo--dark {
+    display: none;
+  }
+
+  [data-theme="dark"] .login-logo--light {
+    display: none;
+  }
+
+  [data-theme="dark"] .login-logo--dark {
+    display: block;
+  }
+
+  .login-wordmark {
+    font-size: 2.85rem;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+
+  .login-tagline {
+    max-width: 20rem;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .login-actions {
+    position: relative;
+    z-index: 1;
+    animation: login-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  }
+
+  .kakao-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    height: 3.35rem;
+    border-radius: 0.9rem;
+    background: var(--color-kakao);
+    color: var(--color-kakao-label);
+    font-size: 1rem;
+    font-weight: 700;
+    box-shadow: 0 12px 30px -12px
+      color-mix(in oklab, var(--color-kakao) 75%, transparent);
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease,
+      filter 0.12s ease;
+  }
+
+  .kakao-button:hover {
+    filter: brightness(0.97);
+  }
+
+  .kakao-button:active {
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 0 6px 16px -10px
+      color-mix(in oklab, var(--color-kakao) 75%, transparent);
+  }
+
+  .kakao-button:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  .kakao-symbol {
+    width: 1.25rem;
+    height: 1.25rem;
+    transform: translateY(1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .login-blob,
+    .login-content,
+    .login-actions {
+      animation: none;
+    }
   }
 }
