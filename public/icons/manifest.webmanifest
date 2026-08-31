@@ -1,6 +1,6 @@
 {
-  "name": "또, 여기",
-  "short_name": "또여기",
+  "name": "여기였지",
+  "short_name": "여기였지",
   "description": "가본 곳을 기록하는 개인 지도",
   "start_url": ".",
   "display": "standalone",

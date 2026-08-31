@@ -1,4 +1,4 @@
-# place-log 기획안
+# 여기였지 기획안
 
 개인용 장소 기록 PWA
 
@@ -116,8 +116,8 @@ Profile     user_id (PK, auth.users FK)
             avatar_url
             birth_year (nullable)
             gender (nullable)   male / female / other / undisclosed
-            home_area (nullable)
-            home_lat, home_lng (nullable)
+            base_area (nullable)
+            base_lat, base_lng (nullable)
             created_at
 ```
 
@@ -337,7 +337,7 @@ Vercel               정적 SPA
 프론트와 Supabase를 한 레포에 둔다. 스키마가 바뀌면 프론트 타입도 바뀌므로 커밋 하나에 묶이는 게 자연스럽다. 배포 파이프라인은 독립적이다 — Vercel은 `src/`만 빌드하고 `supabase/`는 무시한다.
 
 ```
-place-log/
+yeogiyeotji/
   src/
     routes/
     features/       map/ record/ place/
