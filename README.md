@@ -1,32 +1,130 @@
-# React + TypeScript + Vite
+# place-log
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+가본 장소를 기록하고, 필요할 때 다시 꺼내 보는 지도.
 
-Currently, two official plugins are available:
+지도 앱의 "저장" 목록은 저장은 쉬운데 맥락이 남지 않는다. 몇 달 뒤에 열어보면 왜 저장했는지, 갔는지 안 갔는지, 좋았는지 별로였는지 알 수 없다. 반대로 메모 앱은 맥락은 남지만 위치로 꺼낼 수가 없다.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+그래서 정작 필요한 순간 — 친구가 "이 근처에서 저녁 뭐 먹지?"라고 물었을 때 — 아무것도 못 꺼낸다. place-log는 그 문제를 푼다.
 
-## React Compiler
+## 별점만으로는 부족하다
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+별점은 나중에 보면 해석이 안 된다. "3.5점이 뭐였지?"가 된다. 더 큰 문제는 검색이 안 된다는 것이다. "이 근처에서 저녁 뭐 먹지"에 답하려면 결국 "또 갈 만한 곳"을 골라야 하는데, 별점으로는 기준선을 매번 임의로 정해야 한다.
 
-## Expanding the Oxlint configuration
+그래서 재방문 의사를 필수로 받는다.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+|              |     |
+| ------------ | --- |
+| **또 갈래**  |     |
+| **괜찮았음** |     |
+| **안 갈래**  |     |
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+같은 축이라 순서가 서고, 그 자체가 결론이라 해석이 필요 없다. 그리고 그 자체가 필터다.
+
+별점은 선택 입력으로 남겨뒀다. 둘은 다른 걸 측정한다. 별점은 "얼마나 좋았나", 재방문 의사는 "다시 갈 건가". 비싸서 다시 안 갈 곳도 훌륭할 수 있다. 필터와 마커 색은 재방문 의사만 쓰고, 별점은 상세 화면의 보조 정보다.
+
+같은 장소를 여러 번 방문하면 변화가 남는다. 예전엔 "또 갈래"였는데 최근엔 "안 갈래"라면, 그게 지금의 결론이다.
+
+## 태그로 꺼낸다
+
+"부모님 + 주차" 같은 조합으로 검색한다. 실제로 던지는 질문에서 역산한 태그 세트다.
+
+```
+동행    혼자 · 둘이서 · 여럿이서 · 부모님
+상황    조용히 얘기 · 오래 앉기 · 빨리 먹기 · 특별한 날
+조건    주차 · 예약 필요 · 웨이팅 있음 · 늦게까지
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+자유 입력은 받지 않는다. 오타와 유사 태그로 몇 달이면 망가지기 때문이다. 음식점·카페 같은 카테고리도 태그로 만들지 않는다. 지도 API가 이미 주는 정보다.
+
+## 기록은 빨라야 한다
+
+이런 앱이 실패하는 이유는 기능이 부족해서가 아니라 입력이 귀찮아서다. 기록 추가는 **입력 필드 1개 + 탭 4번** 안에 끝난다.
+
+```
+장소 검색 → 선택 → 재방문의사 → 태그 → 저장
+```
+
+방문일은 오늘이 기본값이고, 메모와 별점은 접혀 있다. 필수 입력을 늘리는 순간 기록이 밀리기 시작한다.
+
+## 기술 스택
+
+| 영역      | 선택                                 |
+| --------- | ------------------------------------ |
+| 프론트    | Vite · React · TypeScript            |
+| 라우팅    | TanStack Router                      |
+| 서버 상태 | TanStack Query                       |
+| 스타일    | Tailwind CSS v4                      |
+| 지도      | 카카오맵 JS SDK                      |
+| 백엔드    | Supabase (Postgres + PostGIS + Auth) |
+| 배포      | Vercel                               |
+
+### 왜 Next.js가 아닌가
+
+모든 화면이 로그인 뒤에 있어 SEO가 필요 없고, 서버에서 하는 일은 지도 API 키를 감추는 프록시 하나뿐이다. App Router의 서버/클라이언트 경계와 캐싱 모델을 짊어질 이유가 없었다.
+
+오히려 SPA 쪽이 유리한 지점이 있다. PWA 설정이 간단하고, `window`를 직접 붙잡는 지도 SDK를 다루기 편하다.
+
+### 데이터 모델의 핵심
+
+**상태 필드를 두지 않는다.** `Place`에 "가본 곳 / 가고 싶은 곳" enum을 두는 대신, 자식 레코드의 유무로 상태를 파생한다. 이러면 "갔다 왔는데 또 가고 싶은 곳"이 자연스럽게 표현되고, 나중에 위시리스트를 붙일 때 스키마를 뜯지 않아도 된다.
+
+**장소는 전역, 평가는 개인.** `Place`는 모든 사용자가 공유하는 마스터 테이블이고 `user_id`가 없다. 방문 기록과 태그에만 `user_id`가 붙는다. 같은 카페를 두고 누구는 조용하다 하고 누구는 시끄럽다 할 수 있어야 하기 때문이다.
+
+**권한은 DB에서.** 모든 테이블에 RLS를 걸고, `user_id`는 클라이언트가 아니라 `default auth.uid()`로 DB가 채운다. 전역 테이블인 `Place`는 update를 아예 막고 RPC를 통해서만 생성한다.
+
+## 로컬 실행
+
+```bash
+npm install
+cp .env.example .env.local   # 값 채우기
+npm run dev
+```
+
+Supabase 스키마:
+
+```bash
+npx supabase link --project-ref <project-ref>
+npx supabase db push
+npx supabase gen types typescript --linked > src/types/database.ts
+```
+
+### 사전 준비
+
+1. Supabase 프로젝트에서 `postgis` 확장 활성화
+2. 카카오 개발자 콘솔에서 앱 생성 → JS 키, REST 키 발급
+3. 카카오 로그인 활성화 후 Redirect URI 등록
+   `https://<project-ref>.supabase.co/auth/v1/callback`
+4. Supabase Authentication → Providers → Kakao에 REST 키와 Client Secret 등록
+
+## 구조
+
+```
+src/
+  routes/          TanStack Router 파일 기반 라우팅
+  features/        map · record · place
+  components/      공용 UI
+  lib/             supabase · kakao · auth
+  types/           database.ts (자동 생성)
+supabase/
+  migrations/      스키마 · RLS · RPC
+  functions/       카카오 로컬 API 프록시
+docs/
+  PRD.md           기획 배경과 의사결정 근거
+```
+
+## 진행 상황
+
+- [ ] 기반 설정 · 라우팅 뼈대
+- [ ] DB 스키마 · RLS · RPC
+- [ ] 카카오 로그인 · 온보딩
+- [ ] 장소 검색 프록시
+- [ ] 기록 추가
+- [ ] 지도
+- [ ] 장소 상세
+- [ ] 검색
+
+## 앞으로
+
+가보고 싶은 곳(위시리스트)은 테이블만 만들어두고 UI는 미뤘다. 사진의 EXIF에서 좌표와 날짜를 뽑아 입력을 더 줄이는 것, 그리고 기록을 읽기 전용 링크로 공유하는 것도 검토 중이다.
+
+자세한 배경은 [docs/PRD.md](docs/PRD.md).

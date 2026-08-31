@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Claude
+CLAUDE.md
+.omc/
+
+# Tanstack
+.tanstack/tmp/
