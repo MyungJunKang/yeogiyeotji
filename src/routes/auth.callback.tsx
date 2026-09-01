@@ -47,5 +47,5 @@ function AuthCallbackPage() {
     };
   }, [session, loading, error, redirect, navigate, queryClient]);
 
-  return <Splash label="로그인 처리 중…" />;
+  return <Splash label="로그인 중…" />;
 }
