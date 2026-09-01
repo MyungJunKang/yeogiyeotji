@@ -23,7 +23,8 @@ declare module "@tanstack/react-router" {
 
 function InnerApp() {
   const auth = useAuth();
-  if (auth.loading) return <Splash label="시작하는 중…" />;
+  const isAuthCallback = window.location.pathname === "/auth/callback";
+  if (auth.loading && !isAuthCallback) return <Splash label="시작하는 중…" />;
   return <RouterProvider router={router} context={{ auth }} />;
 }
 
@@ -34,5 +35,5 @@ createRoot(document.getElementById("root")!).render(
         <InnerApp />
       </AuthProvider>
     </QueryClientProvider>
-  </StrictMode>,
+  </StrictMode>
 );
